@@ -1,0 +1,24 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+
+# Data: public but heavy, rebuilt by `make ingest`. The manifest is versioned.
+data/*
+!data/manifest.jsonl
+!data/README.md
+
+# LaTeX build
+report/*.aux
+report/*.log
+report/*.out
+report/*.toc
+report/*.fls
+report/*.fdb_latexmk
+report/*.synctex.gz
+
+# Local
+Claude outputs/
+_to_delete/
