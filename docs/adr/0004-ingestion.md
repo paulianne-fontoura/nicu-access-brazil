@@ -23,9 +23,18 @@ integer, the DBF holds integers. File names on the FTP mix `.dbc` and `.DBC`.
 An empty answer from the mirror is not an error for PySUS. Written as is, it would
 become a year without births.
 
+On Windows the mirror answered empty for every file, including those it serves on
+Linux. PySUS keeps the files of its FTP origin with
+`str(path).startswith("public/data/ftp/")`, and `str()` of a Windows path uses
+backslashes, so the test never matches. Found on 1 October 2026, when the beds of
+Sergipe came from the mirror on Linux and from the origin on Windows.
+
 ## Decision
 
 - Final years - mirror first, origin when the mirror is empty.
+- The project queries the PySUS catalog itself and keeps the FTP files with
+  `as_posix()`, which reads the same on every system (`fetch.ftp_files`, tested
+  with both path flavours). On Linux the result is identical to `pysus.ftp.*`.
 - Preliminary years - origin only, the mirror holds final files.
 - Both empty - the file fails, nothing is written, the run goes on and reports it.
 - Downloads from the origin resume where they stopped (FTP `REST`), with up to
@@ -40,7 +49,8 @@ become a year without births.
 ## Consequences
 
 A rerun may read the same file from the other source. The content hash shows
-whether the data changed. The gap in the mirror is reported to PySUS.
+whether the data changed. The gap in the mirror and the Windows filter are
+reported to PySUS.
 
 ## Comparisons
 
