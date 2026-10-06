@@ -49,16 +49,23 @@ published here.
 ## Run it
 
 ```bash
-make setup     # Python 3.11+, dependencies with uv
-make ingest    # IBGE, CNES beds and SINASC births into data/raw (resumable)
-make status    # what is still missing
-make test
+uv sync                       # Python 3.12 and dependencies
+uv run nicu ingest ibge       # transport network, arrangements, municipal seats
+uv run nicu ingest cnes       # beds, one month per year and state
+uv run nicu ingest sinasc     # births, one file per year and state
+uv run nicu status            # what is still missing
+uv run pytest -q
 ```
+
+With `make` installed, `make setup`, `make ingest`, `make status` and `make test`
+run the same commands.
 
 Raw files come from the [PySUS](https://github.com/AlertaDengue/PySUS) mirror
 when it has them, otherwise from the DATASUS FTP server, with resumed downloads.
 Every file is recorded in `data/manifest.jsonl` with its source, row count and
-content hash.
+content hash. The full ingestion writes 1,083 files, about 330 MB of parquet, and
+takes several hours, most of them on the years that only the FTP server holds. It
+can be stopped and started again, recorded files are skipped.
 
 ## Author
 
