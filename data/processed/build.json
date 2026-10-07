@@ -1,0 +1,225 @@
+{
+ "tables": {
+  "births_at_risk": 328486,
+  "births_by_place": 115287,
+  "births_by_residence": 111684,
+  "nicu_beds": 16094
+ },
+ "by_year": [
+  {
+   "year": 2006,
+   "status": "final",
+   "births": 2944928,
+   "weight_missing": 10394,
+   "w500_1499": 34171,
+   "w_under_500": 2625,
+   "beds": 5484,
+   "beds_sus": 2874
+  },
+  {
+   "year": 2007,
+   "status": "final",
+   "births": 2891328,
+   "weight_missing": 18074,
+   "w500_1499": 32937,
+   "w_under_500": 2462,
+   "beds": 5749,
+   "beds_sus": 2711
+  },
+  {
+   "year": 2008,
+   "status": "final",
+   "births": 2934828,
+   "weight_missing": 6591,
+   "w500_1499": 34178,
+   "w_under_500": 2817,
+   "beds": 7182,
+   "beds_sus": 3200
+  },
+  {
+   "year": 2009,
+   "status": "final",
+   "births": 2881581,
+   "weight_missing": 5437,
+   "w500_1499": 34517,
+   "w_under_500": 2979,
+   "beds": 7154,
+   "beds_sus": 3381
+  },
+  {
+   "year": 2010,
+   "status": "final",
+   "births": 2861868,
+   "weight_missing": 4314,
+   "w500_1499": 33714,
+   "w_under_500": 2895,
+   "beds": 7478,
+   "beds_sus": 3637
+  },
+  {
+   "year": 2011,
+   "status": "final",
+   "births": 2913160,
+   "weight_missing": 3369,
+   "g_under_32_only": 18139,
+   "w500_1499": 34976,
+   "w_under_500": 3614,
+   "beds": 7931,
+   "beds_sus": 4008
+  },
+  {
+   "year": 2012,
+   "status": "final",
+   "births": 2905789,
+   "weight_missing": 2474,
+   "g_under_32_only": 20329,
+   "w500_1499": 34876,
+   "w_under_500": 3321,
+   "beds": 7979,
+   "beds_sus": 4055
+  },
+  {
+   "year": 2013,
+   "status": "final",
+   "births": 2904027,
+   "weight_missing": 2011,
+   "g_under_32_only": 20238,
+   "w500_1499": 35385,
+   "w_under_500": 3874,
+   "beds": 8416,
+   "beds_sus": 4340
+  },
+  {
+   "year": 2014,
+   "status": "final",
+   "births": 2979259,
+   "weight_missing": 1604,
+   "g_under_32_only": 18744,
+   "w500_1499": 35975,
+   "w_under_500": 3539,
+   "beds": 8771,
+   "beds_sus": 4410
+  },
+  {
+   "year": 2015,
+   "status": "final",
+   "births": 3017668,
+   "weight_missing": 1209,
+   "g_under_32_only": 18459,
+   "w500_1499": 36739,
+   "w_under_500": 3863,
+   "beds": 8643,
+   "beds_sus": 4467
+  },
+  {
+   "year": 2016,
+   "status": "final",
+   "births": 2857800,
+   "weight_missing": 1041,
+   "g_under_32_only": 17549,
+   "w500_1499": 35258,
+   "w_under_500": 4015,
+   "beds": 8959,
+   "beds_sus": 4801
+  },
+  {
+   "year": 2017,
+   "status": "final",
+   "births": 2923535,
+   "weight_missing": 993,
+   "g_under_32_only": 17414,
+   "w500_1499": 37001,
+   "w_under_500": 4065,
+   "beds": 8766,
+   "beds_sus": 4677
+  },
+  {
+   "year": 2018,
+   "status": "final",
+   "births": 2944932,
+   "weight_missing": 945,
+   "g_under_32_only": 17269,
+   "w500_1499": 36579,
+   "w_under_500": 3926,
+   "beds": 8931,
+   "beds_sus": 4722
+  },
+  {
+   "year": 2019,
+   "status": "final",
+   "births": 2849146,
+   "weight_missing": 746,
+   "g_under_32_only": 16376,
+   "w500_1499": 36326,
+   "w_under_500": 4127,
+   "beds": 9071,
+   "beds_sus": 4875
+  },
+  {
+   "year": 2020,
+   "status": "final",
+   "births": 2730145,
+   "weight_missing": 637,
+   "g_under_32_only": 15848,
+   "w500_1499": 34532,
+   "w_under_500": 3928,
+   "beds": 9358,
+   "beds_sus": 4895
+  },
+  {
+   "year": 2021,
+   "status": "final",
+   "births": 2677101,
+   "weight_missing": 563,
+   "g_under_32_only": 15605,
+   "w500_1499": 34651,
+   "w_under_500": 3729,
+   "beds": 9645,
+   "beds_sus": 4919
+  },
+  {
+   "year": 2022,
+   "status": "final",
+   "births": 2561922,
+   "weight_missing": 397,
+   "g_under_32_only": 15325,
+   "w500_1499": 34530,
+   "w_under_500": 3982,
+   "beds": 9976,
+   "beds_sus": 5007
+  },
+  {
+   "year": 2023,
+   "status": "final",
+   "births": 2537576,
+   "weight_missing": 268,
+   "g_under_32_only": 15458,
+   "w500_1499": 33933,
+   "w_under_500": 3980,
+   "beds": 10258,
+   "beds_sus": 5130
+  },
+  {
+   "year": 2024,
+   "status": "final",
+   "births": 2389325,
+   "weight_missing": 221,
+   "g_under_32_only": 14980,
+   "w500_1499": 31609,
+   "w_under_500": 3727,
+   "beds": 10250,
+   "beds_sus": 5189
+  },
+  {
+   "year": 2025,
+   "status": "prelim",
+   "births": 2456688,
+   "weight_missing": 204,
+   "g_under_32_only": 14192,
+   "w500_1499": 31151,
+   "w_under_500": 3942,
+   "beds": 10229,
+   "beds_sus": 5186
+  }
+ ]
+}

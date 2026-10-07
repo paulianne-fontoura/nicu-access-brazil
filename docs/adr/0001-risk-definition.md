@@ -1,6 +1,6 @@
-# ADR-0001 - A birth at risk is a birth under 1,500 g
+# ADR-0001 - A birth at risk is a birth of 500 to 1,499 g
 
-Status - accepted, 1 October 2026.
+Status - accepted, 1 October 2026. Amended on 6 October 2026, lower bound of 500 g.
 
 ## Context
 
@@ -26,19 +26,33 @@ missing for 0.26 % of births in Sergipe in 2006, and for 0.15 % (2010) and 0.02 
 
 ## Decision
 
-A birth at risk is a live birth under 1,500 g (very low birth weight), for every
-year from 2006 to 2025. Births with a missing weight are counted and reported each
-year, never imputed.
+A birth at risk is a live birth of 500 to 1,499 g, for every year from 2006 to 2025.
+Births under 500 g are counted apart, and births with a missing weight are counted
+and reported each year, never imputed.
 
-Sensitivity check, from 2011 only - under 1,500 g or under 32 weeks.
+Sensitivity check, from 2011 only - births under 32 weeks whose weight is 1,500 g
+or more.
+
+## Why 500 g
+
+The prototype counted every birth under 1,500 g and showed a rise, from 1.28 % of
+births in 2010 to 1.50 % in 2022. The full series shows where it comes from.
+
+| | 2006 | 2015 | 2022 | 2025 (preliminary) |
+|---|---:|---:|---:|---:|
+| Births | 2,944,928 | 3,017,668 | 2,561,922 | 2,456,688 |
+| Under 500 g | 2,625 | 3,863 | 3,982 | 3,942 |
+| 500 to 1,499 g | 34,171 | 36,739 | 34,530 | 31,151 |
+| Weight missing | 10,394 | 1,209 | 397 | 204 |
+
+Births under 500 g rose by half while births fell by a sixth. These births are at
+the limit of viability and their registration as live births varies between
+places and over time. Counted with the others, they would read as a rise in
+demand. Births of 500 to 1,499 g follow the number of births, as expected.
 
 ## Consequences
 
 The series is comparable over twenty years. Weight leaves out some preterm births
-of normal weight who also need intensive care, so the demand is a floor. The
-national share under 1,500 g rose from 1.28 % (36,609 births) in 2010 to 1.50 %
-(38,512) in 2022 in the prototype. Session 2 checks whether this is a change in
-births or in registration (births under 500 g, deaths soon after birth).
+of normal weight who also need intensive care, so the demand is a floor.
 
-Measured on 1 October 2026 with the prototype, figures recomputed by the pipeline
-in session 2.
+Figures from the full ingestion (1,083 files), 6 October 2026.

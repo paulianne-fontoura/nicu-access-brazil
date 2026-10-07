@@ -5,10 +5,13 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 
-# Data: public but heavy, rebuilt by `make ingest`. The manifest is versioned.
+# Data: the raw files are public but heavy, rebuilt by `nicu ingest`. The manifest,
+# the processed counts and the results are small and versioned.
 data/*
 !data/manifest.jsonl
 !data/README.md
+!data/processed/
+!data/results/
 
 # LaTeX build
 report/*.aux

@@ -16,6 +16,10 @@ import pandas as pd
 from nicu import config as C
 from nicu import manifest
 
+# Brazilian municipality codes start with 1 to 5. The survey also lists towns
+# across the border, coded 8 and 9.
+FOREIGN_FROM = 6_000_000
+
 
 def download(url: str, dest: Path) -> Path:
     dest.parent.mkdir(parents=True, exist_ok=True)
@@ -30,11 +34,11 @@ def parse_links(xlsx: Path) -> pd.DataFrame:
     """One edge per pair of municipalities with a regular bus or boat line.
 
     Codes are cut to 6 digits (no check digit), the form used by SINASC and
-    CNES. Pairs with a foreign end (codes 9xxxxxx) are dropped. When a pair
-    appears twice the shortest time is kept.
+    CNES. Pairs with a foreign end are dropped. When a pair appears twice the
+    shortest time is kept.
     """
     raw = pd.read_excel(xlsx, sheet_name="Base de dados")
-    raw = raw[(raw.CODMUNDV_A < 9_000_000) & (raw.CODMUNDV_B < 9_000_000)]
+    raw = raw[(raw.CODMUNDV_A < FOREIGN_FROM) & (raw.CODMUNDV_B < FOREIGN_FROM)]
     a = (raw.CODMUNDV_A // 10).astype(str)
     b = (raw.CODMUNDV_B // 10).astype(str)
     edges = pd.DataFrame(
@@ -68,7 +72,7 @@ def parse_arranjos(xlsx: Path) -> pd.DataFrame:
 
 
 def parse_seats(gpkg_zip: Path) -> pd.DataFrame:
-    """Coordinates of each municipal seat (IBGE Localidades 2022)."""
+    """One point per municipality, its seat when it has one (IBGE Localidades 2022)."""
     with tempfile.TemporaryDirectory() as tmp:
         with zipfile.ZipFile(gpkg_zip) as zf:
             member = next(n for n in zf.namelist() if n.endswith(".gpkg"))
@@ -79,10 +83,21 @@ def parse_seats(gpkg_zip: Path) -> pd.DataFrame:
             table = con.execute(
                 "select table_name from gpkg_contents where data_type = 'features'"
             ).fetchone()[0]
+            # one point per municipality: its seat, the federal capital for
+            # Brasília, and failing that its first locality (Fernando de Noronha)
             seats = pd.read_sql(
-                f"""select CD_MUN as mun7, NM_MUN as name, SIGLA_UF as uf,
-                           LAT_LOCALIDADE as lat, LONG_LOCALIDADE as lon
-                    from "{table}" where SCT_LOCALIDADE = 'Sede Municipal'""",
+                f"""select mun7, name, uf, lat, lon from (
+                        select CD_MUN as mun7, NM_MUN as name, SIGLA_UF as uf,
+                               LAT_LOCALIDADE as lat, LONG_LOCALIDADE as lon,
+                               row_number() over (
+                                   partition by CD_MUN
+                                   order by case SCT_LOCALIDADE
+                                       when 'Sede Municipal' then 0
+                                       when 'Capital Federal' then 1
+                                       else 2 end, rowid
+                               ) as choice
+                        from "{table}")
+                    where choice = 1""",
                 con,
             )
     seats.insert(0, "mun", seats.mun7.str[:6])
