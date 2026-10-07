@@ -1,5 +1,5 @@
 # Requires uv (https://docs.astral.sh/uv/).
-.PHONY: setup ingest status test lint
+.PHONY: setup ingest status build analyze test lint
 
 setup:
 	uv sync
@@ -11,6 +11,12 @@ ingest:
 
 status:
 	uv run nicu status
+
+build:
+	uv run nicu build
+
+analyze:
+	uv run nicu analyze
 
 test:
 	uv run pytest -q

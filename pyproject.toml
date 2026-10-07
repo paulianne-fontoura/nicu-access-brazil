@@ -15,7 +15,7 @@ dependencies = [
     "pyarrow>=14",
     "openpyxl>=3.1",
     "networkx>=3.3",
-    "pulp>=3.3",
+    "scipy>=1.14",
     "typer>=0.24.1,<0.25",
 ]
 

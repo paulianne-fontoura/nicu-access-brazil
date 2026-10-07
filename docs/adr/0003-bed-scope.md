@@ -1,6 +1,7 @@
 # ADR-0003 - SUS NICU beds, codes harmonised across 2007-2008
 
-Status - accepted, 1 October 2026.
+Status - accepted, 1 October 2026. Amended on 6 October 2026, national series and the
+2008 break.
 
 ## Context
 
@@ -30,7 +31,7 @@ counting every bed, and from 10.7 % to 9.8 % when counting SUS beds only.
   and 93) are not NICUs and are left out.
 - Main measure - SUS beds (`QT_SUS`). A facility offers SUS neonatal intensive
   care when it has at least one SUS bed under these codes.
-- Check - every existing bed (`QT_EXIST`), SUS or not.
+- Check - every existing bed (`QT_EXIST`), SUS or not, from 2008 only (see below).
 - When a facility reports old and new codes in the same month, the larger count is
   kept, so no bed is counted twice.
 - Beds are read in December of each year, in November for 2007.
@@ -41,3 +42,24 @@ The bed series runs over twenty years with one definition. Most of the populatio
 depends on SUS, so the main measure follows the beds a public planner can act on,
 and the check shows what private beds add. The 2007 exception is documented in the
 configuration (`BED_MONTH_EXCEPTIONS`) and tested.
+
+## The series over twenty years
+
+Counts from the full ingestion, 6 October 2026, one month per year.
+
+| | 2006 | 2007 (Nov.) | 2008 | 2015 | 2025 |
+|---|---:|---:|---:|---:|---:|
+| NICU beds, all | 5,484 | 5,749 | 7,182 | 8,643 | 10,229 |
+| of which type I (code 80) | 362 | 479 | 3,490 | 1,833 | 1,169 |
+| NICU beds, SUS | 2,874 | 2,711 | 3,200 | 4,467 | 5,186 |
+| Facilities with SUS NICU beds | 353 | 334 | 361 | 435 | 474 |
+| Municipalities with SUS NICU beds | 192 | 184 | 200 | 253 | 279 |
+
+Type I beds go from 479 to 3,490 between November 2007 and December 2008, when the
+codes by type replace the single code. These are beds that the register did not
+count as neonatal intensive care before. The all-beds series is therefore read
+from 2008, and comparisons with 2006 use SUS beds, which move from 2,711 to 3,200
+over the same months.
+
+Two facilities reported old and new codes together in 2006 and five in November
+2007. The larger count is kept for each.

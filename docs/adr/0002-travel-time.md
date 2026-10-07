@@ -1,6 +1,6 @@
 # ADR-0002 - Travel time on the IBGE bus and boat network
 
-Status - accepted, 1 October 2026.
+Status - accepted, 1 October 2026. Amended on 6 October 2026, measured pace.
 
 ## Context
 
@@ -25,9 +25,10 @@ Two gaps showed up in the prototype.
 - Edges are the IBGE pairs, minimum time kept when a pair appears twice.
 - Every pair of municipalities in the same population arrangement (IBGE, 294
   arrangements) gets a 60-minute link. 30 and 90 minutes are tested.
-- A municipality outside the network is linked to the network by straight-line
-  distance between seats, converted into time with a speed estimated in session 2
-  on the connected pairs.
+- A municipality outside the network is linked to its three nearest surveyed
+  municipalities by straight-line distance between seats, converted into time at
+  the pace of the surveyed lines. This pace is the median over the IBGE pairs, 1.39
+  minutes per straight-line kilometre (about 43 km/h).
 - Straight-line distance alone is run as a check for the whole study. A
   recommendation must hold under both measures.
 
@@ -38,3 +39,16 @@ NICU in 2022 went from 3,085 to 2,562 in the prototype, and the suburbs left the
 list of recommended sites. Travel times are those of public transport, slower than
 a car and closer to what most families face. The network is frozen in 2016 and
 applied to every year from 2006 to 2025, a limit the note states.
+
+Three details settled with the full data.
+
+- Towns across the border, which the survey lists, are dropped. A path between two
+  Brazilian municipalities does not go through another country here.
+- Two surveyed municipalities near Cuiabá are only linked to each other. Any group
+  cut off from the rest is attached by the same rule as municipalities outside the
+  survey.
+- Brasília has no municipal seat in the IBGE file, its point is the federal
+  capital.
+
+Once completed the network holds the 5,571 municipalities in one piece, with
+68,332 links, 378 of them estimated from straight-line distance.

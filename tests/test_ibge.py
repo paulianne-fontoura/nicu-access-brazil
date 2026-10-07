@@ -11,7 +11,7 @@ def test_links_keep_the_fastest_line_per_pair_and_drop_foreign_ends(tmp_path):
     rows = pd.DataFrame(
         {
             "CODMUNDV_A": [1302603, 2800308, 2800308, 1302603],
-            "CODMUNDV_B": [1304260, 2804805, 2804805, 9200648],
+            "CODMUNDV_B": [1304260, 2804805, 2804805, 8000011],
             "VAR03": [50.0, 10.0, 12.0, 300.0],
             "VAR04": [2160, 45, 40, 900],
             "VAR05": [7.5, 0, 0, 1],
@@ -67,6 +67,8 @@ def test_seats_are_read_from_the_geopackage(tmp_path):
                 ("2800308", "Aracaju", "SE", "Sede Municipal", -10.91, -37.07),
                 ("2800308", "Aracaju", "SE", "Povoado", -10.95, -37.10),
                 ("1100015", "Alta Floresta D'Oeste", "RO", "Sede Municipal", -11.93, -62.00),
+                ("5300108", "Brasília", "DF", "Outras Localidades", -15.70, -47.90),
+                ("5300108", "Brasília", "DF", "Capital Federal", -15.78, -47.93),
             ],
         )
     archive = tmp_path / "loc.zip"
@@ -74,8 +76,9 @@ def test_seats_are_read_from_the_geopackage(tmp_path):
         zf.write(gpkg, "BR_localidades_2022.gpkg")
 
     seats = ibge.parse_seats(archive)
-    assert seats.mun.tolist() == ["110001", "280030"]
-    assert seats.loc[seats.mun == "280030", "lat"].item() == -10.91
+    assert seats.mun.tolist() == ["110001", "280030", "530010"]
+    assert seats.loc[seats.mun == "280030", "lat"].item() == -10.91  # the seat, not the hamlet
+    assert seats.loc[seats.mun == "530010", "lat"].item() == -15.78  # Brasília has no seat
 
 
 def test_ingest_skips_recorded_files(tmp_path, monkeypatch):
