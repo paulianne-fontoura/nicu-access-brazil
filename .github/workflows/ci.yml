@@ -1,6 +1,8 @@
 name: ci
 
-# Lint and tests on synthetic data. No network, no real data in CI.
+# Lint and tests without network, on synthetic data and on the versioned counts
+# and results (no raw data in CI), then the note is compiled and published as an
+# artefact.
 on:
   push:
     branches: [main]
@@ -21,3 +23,18 @@ jobs:
           uv run ruff format --check .
       - name: Tests
         run: uv run pytest -q
+
+  note:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile the note (LaTeX)
+        uses: xu-cheng/latex-action@v3
+        with:
+          working_directory: report
+          root_file: note.tex
+      - uses: actions/upload-artifact@v4
+        with:
+          name: note
+          path: report/note.pdf

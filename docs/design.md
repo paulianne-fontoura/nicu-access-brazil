@@ -1,6 +1,7 @@
 # Design
 
-Status - accepted, 1 October 2026. Amended on 6 October 2026 (risk definition, sessions).
+Status - accepted, 1 October 2026. Amended on 6 October 2026 (risk definition, sessions)
+and on 8 October 2026 (the note, project complete).
 Changes go through an ADR.
 
 ## Question
@@ -40,6 +41,7 @@ judge public policy, and the note says so.
 | IBGE, Ligações rodoviárias e hidroviárias 2016 | Bus and boat travel times between municipalities | 5,407 municipalities |
 | IBGE, Arranjos populacionais (2nd ed.) | Municipalities forming one urban area | 294 arrangements, 953 municipalities |
 | IBGE, Localidades 2022 | One point per municipality, its seat | 5,571 municipalities |
+| IBGE, Malhas 2022, lowest resolution | State boundaries for the map | 27 states |
 
 Twenty years is the longest series the sources allow. SINASC goes back to 1996,
 but CNES starts in August 2005, so 2006 is the first year with beds.
@@ -53,6 +55,7 @@ but CNES starts in August 2005, so 2006 is the first year with beds.
 | [0003](adr/0003-bed-scope.md) | SUS NICU beds as the main measure, all NICU beds as a check from 2008, codes harmonised across the 2007-2008 change |
 | [0004](adr/0004-ingestion.md) | PySUS mirror first, DATASUS FTP origin when the mirror is empty or the year preliminary, never an empty file |
 | [0005](adr/0005-location-model.md) | Maximal covering location model solved exactly on the last five years together, candidates with 1,000 births a year, each choice checked year by year |
+| [0006](adr/0006-note-written-by-the-pipeline.md) | Every number, table and figure of the note written by `nicu report`, the claims of the text checked against the data |
 
 ## Architecture
 
@@ -69,21 +72,31 @@ flowchart LR
   R[raw layer<br/>parquet + manifest] --> W[DuckDB<br/>staging and marts]
   W --> G[travel times<br/>networkx]
   G --> O[location model<br/>SciPy / HiGHS]
-  W --> N[LaTeX note<br/>figures and numbers written by the pipeline]
-  O --> N
+  O --> T[data/results<br/>one CSV per table]
+  W --> T
+  T --> N[nicu report<br/>numbers, tables, figures]
+  N --> P[LaTeX note<br/>report/note.pdf]
 ```
 
 Python 3.12 with uv, typer command line `nicu`. The raw layer keeps every column
 as text, typing happens in DuckDB. `nicu build` reduces the raw files to counts by
 year, municipality and facility, small enough to be versioned, and the analysis
-reads nothing else. CI runs lint and tests on synthetic data only,
-no network.
+reads nothing else. `nicu analyze` writes one CSV per result table and
+`nicu report` writes the numbers, tables and figures of the note. CI runs lint and
+tests without network, on synthetic data and on the versioned counts and results,
+then compiles the note.
+
+Figures follow one palette. Regions keep the same categorical colour wherever
+they appear, travel time on the map is neutral grey within reach and one blue
+hue from light to dark beyond it, and the sites of the model are the only
+orange marks.
 
 ## Sessions
 
-1. Repository, design, ingestion with resume and source comparison.
-2. Processed tables and the three questions (`nicu build`, `nicu analyze`).
-3. Note in LaTeX, README, map, final CI.
+1. Repository, design, ingestion with resume and source comparison (6 October 2026).
+2. Processed tables and the three questions, `nicu build` and `nicu analyze`
+   (8 October 2026).
+3. Note in LaTeX, `nicu report`, map, README, final CI (8 October 2026).
 
 The plan had five sessions. Questions 1 to 3 share the same tables and the same
 network, so they were built together.

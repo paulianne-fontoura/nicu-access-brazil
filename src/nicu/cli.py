@@ -1,4 +1,4 @@
-"""Command line: nicu ingest ..., status, compare-sources, build, analyze."""
+"""Command line: nicu ingest ..., status, compare-sources, build, analyze, report."""
 
 from __future__ import annotations
 
@@ -11,6 +11,7 @@ from nicu import analyze as analysis
 from nicu import build as builder
 from nicu import config as C
 from nicu import fetch, ibge, ingest
+from nicu import report as reporting
 
 app = typer.Typer(no_args_is_help=True, add_completion=False)
 ingest_app = typer.Typer(no_args_is_help=True, help="Fill the raw layer.")
@@ -161,3 +162,20 @@ def analyze() -> None:
             f" within reach, chosen in {row.years_chosen} of {years} years"
         )
     typer.echo(f"{len(tables)} tables written to {C.RESULTS_DIR.relative_to(C.ROOT).as_posix()}")
+
+
+@app.command()
+def report() -> None:
+    """Numbers, tables and figures of the note, from data/results into report/."""
+    try:
+        values = reporting.run()
+    except reporting.ReportError as exc:
+        typer.secho(str(exc), fg="red")
+        raise typer.Exit(1) from exc
+    folder = reporting.REPORT_DIR.relative_to(C.ROOT).as_posix()
+    typer.echo(f"{len(values)} numbers, 2 tables and 2 figures written to {folder}")
+    typer.echo(
+        f"Born in a SUS NICU facility {values['bornFirst']} -> {values['bornLast']},"
+        f" over 2 hours away {values['overFirst']} -> {values['overLast']}".replace("\\,\\%", "%")
+    )
+    typer.echo(f"Solid sites: {values['solidSites']}")

@@ -1,3 +1,6 @@
+import gzip
+import io
+import json
 import sqlite3
 import zipfile
 from contextlib import closing
@@ -98,6 +101,43 @@ def test_ingest_skips_recorded_files(tmp_path, monkeypatch):
     monkeypatch.setattr(ibge, "SOURCES", parsers)
     assert set(ibge.ingest(root=tmp_path).values()) == {1}
     assert set(ibge.ingest(root=tmp_path).values()) == {None}
-    assert len(calls) == 3
+    assert len(calls) == len(ibge.SOURCES) == 4
     ibge.ingest(root=tmp_path, force=True)
-    assert len(calls) == 6
+    assert len(calls) == 8
+
+
+def test_states_become_one_row_per_point(tmp_path):
+    square = [[[0, 0], [1, 0], [1, 1], [0, 0]]]
+    features = [
+        {"type": "Feature", "properties": {"codarea": "28"},
+         "geometry": {"type": "Polygon", "coordinates": square}},
+        {"type": "Feature", "properties": {"codarea": "11"},
+         "geometry": {"type": "MultiPolygon", "coordinates": [square, square]}},
+    ]  # fmt: skip
+    path = tmp_path / "states.geojson"
+    path.write_text(json.dumps({"type": "FeatureCollection", "features": features}))
+    states = ibge.parse_states(path)
+    assert len(states) == 3 * 4
+    assert states.groupby("uf_code").part.nunique().to_dict() == {"11": 2, "28": 1}
+    assert states.iloc[0][["uf_code", "part", "ring", "point", "lon", "lat"]].tolist() == [
+        "11",
+        0,
+        0,
+        0,
+        0,
+        0,
+    ]
+
+
+class FakeResponse(io.BytesIO):
+    def __init__(self, body: bytes, encoding: str | None):
+        super().__init__(body)
+        self.headers = {"Content-Encoding": encoding} if encoding else {}
+
+
+def test_download_undoes_gzip_when_the_server_compresses(tmp_path, monkeypatch):
+    body = b'{"type": "FeatureCollection", "features": []}'
+    answers = iter([FakeResponse(gzip.compress(body), "gzip"), FakeResponse(body, None)])
+    monkeypatch.setattr(ibge.urllib.request, "urlopen", lambda url, timeout: next(answers))
+    assert ibge.download("https://x", tmp_path / "a.json").read_bytes() == body
+    assert ibge.download("https://x", tmp_path / "b.json").read_bytes() == body

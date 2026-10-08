@@ -48,7 +48,7 @@ def raw(tmp_path):
         beds([("0000033", "120001", "82", "2", "2")]).to_parquet(
             folder / "cnes_lt" / f"LTBB{year}12.parquet"
         )
-    for name in ("links", "arranjos", "seats"):
+    for name in ("links", "arranjos", "seats", "states"):
         pd.DataFrame({"x": [1]}).to_parquet(folder / "ibge" / f"{name}.parquet")
     return folder
 

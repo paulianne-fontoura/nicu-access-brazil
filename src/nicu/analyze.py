@@ -2,7 +2,7 @@
 
 1. How did access change over the period (`access`)?
 2. Did the beds opened go where uncovered births were (`bed_growth`,
-   `decomposition`)?
+   `reach_change`, `decomposition`)?
 3. Where would new units cover the most uncovered births (`sites`)?
 """
 
@@ -204,6 +204,44 @@ def bed_growth(data: Data, first: int, last: int, scope: str) -> dict:
     }
 
 
+def reach_change(
+    data: Data, network, first: int, last: int, scope: str, threshold: float = MAIN_THRESHOLD
+) -> dict:
+    """What the change of NICU map did to the births at risk of the first year.
+
+    Births are held at the first year. Some uncovered births are brought within
+    reach by the units opened, some covered births fall out of reach where
+    units closed. The municipalities that opened their first unit are split
+    between those that were beyond the threshold and those already within it.
+    """
+    births = demand(data, first)
+    _, before = nicu(data.beds, first, scope)
+    _, after = nicu(data.beds, last, scope)
+    minutes_before = pd.Series(births.index.map(network.nearest(before)), index=births.index)
+    minutes_after = pd.Series(births.index.map(network.nearest(after)), index=births.index)
+    far_before, far_after = over(minutes_before, threshold), over(minutes_after, threshold)
+    opened = sorted(after - before)
+    distance = pd.Series(network.nearest(before), dtype=float).reindex(opened)
+    beyond = [m for m, far in zip(opened, over(distance, threshold), strict=True) if far]
+    column = "beds_sus" if scope == "sus" else "beds"
+    beds_last = data.beds[data.beds.year == last].groupby("mun")[column].sum()
+    return {
+        "scope": scope,
+        "first": first,
+        "last": last,
+        "threshold": threshold,
+        "births_first": int(births.sum()),
+        "uncovered_first": int(births[far_before].sum()),
+        "brought_within_reach": int(births[far_before & ~far_after].sum()),
+        "fell_out_of_reach": int(births[~far_before & far_after].sum()),
+        "uncovered_with_last_map": int(births[far_after].sum()),
+        "municipalities_opened": len(opened),
+        "opened_beyond_threshold": len(beyond),
+        "beds_opened_beyond_threshold": int(beds_last.reindex(beyond).fillna(0).sum()),
+        "municipalities_closed": len(before - after),
+    }
+
+
 def uncovered(
     data: Data, network, births_year: int, beds_year: int, threshold: float, scope: str
 ) -> tuple[int, int]:
@@ -388,10 +426,15 @@ def sites(
         for threshold in thresholds:
             far = births[over(far_from, threshold)]
             cover = {c: network.reach(c, threshold) for c in sorted(options)}
+            # what every candidate opened at once would cover, the ceiling
+            reachable = set().union(*cover.values()) & set(far.index) if cover else set()
+            ceiling = int(far[sorted(reachable)].sum())
             tags = {"measure": measure, **labels, "threshold": threshold}
             chosen, coverage = _place(far, cover, units, tags)
             chosen_rows.extend(chosen)
-            coverage_rows.extend({**row, "candidates": len(options)} for row in coverage)
+            coverage_rows.extend(
+                {**row, "candidates": len(options), "births_coverable": ceiling} for row in coverage
+            )
 
     # the last years together, against the latest NICU map
     _, with_nicu = nicu(data.beds, years[-1], scope)
@@ -439,6 +482,34 @@ def ranking(chosen: pd.DataFrame, straight: pd.DataFrame, seats: pd.DataFrame) -
     ).reset_index(drop=True)
 
 
+# --- one row per municipality ---------------------------------------------------------
+
+
+def municipalities(data: Data, network, years: list[int] | None = None) -> pd.DataFrame:
+    """Every municipality with its travel time to the nearest SUS unit at both
+    ends of the period, its SUS beds, its births at risk and whether it is a
+    candidate site. The map is drawn from this table."""
+    first, last = data.years[0], data.years[-1]
+    years = years or data.years[-SITE_YEARS:]
+    table = data.seats.drop_duplicates("mun").set_index("mun")[["name", "uf", "lat", "lon"]]
+    table = table.copy()
+    table.insert(2, "region", table.index.str[0].map(REGIONS))
+    for label, year in (("first", first), ("last", last)):
+        _, with_nicu = nicu(data.beds, year, "sus")
+        minutes = pd.Series(network.nearest(with_nicu), dtype=float)
+        table[f"minutes_{label}"] = minutes.reindex(table.index).round(1)
+        beds = data.beds[data.beds.year == year].groupby("mun").beds_sus.sum()
+        table[f"sus_beds_{label}"] = beds.reindex(table.index).fillna(0).astype(int)
+    table["births_at_risk_first"] = demand(data, first).reindex(table.index).fillna(0).astype(int)
+    pooled = pd.concat([demand(data, y) for y in years]).groupby(level=0).sum()
+    table["births_at_risk_last_years"] = pooled.reindex(table.index).fillna(0).astype(int)
+    place = data.by_place[data.by_place.year.isin(years)].groupby("mun_birth").n.sum() / len(years)
+    _, with_nicu = nicu(data.beds, years[-1], "sus")
+    options = (set(place[place >= MIN_BIRTHS].index) - with_nicu) & network.nodes
+    table["candidate"] = table.index.isin(options)
+    return table.reset_index().sort_values("mun", ignore_index=True)
+
+
 # --- everything ----------------------------------------------------------------------
 
 
@@ -461,6 +532,12 @@ def run(
                 bed_growth(data, max(first, ALL_BEDS_FROM), last, "all"),
             ]
         ),
+        "reach_change": pd.DataFrame(
+            [
+                reach_change(data, network, first, last, "sus"),
+                reach_change(data, network, max(first, ALL_BEDS_FROM), last, "all"),
+            ]
+        ),
         "sensitivity": sensitivity(data),
         "decomposition": pd.concat(
             [
@@ -472,6 +549,7 @@ def run(
         "site_coverage": pd.concat([coverage, coverage_line], ignore_index=True),
         "sites_by_year": pd.concat([chosen, chosen_line], ignore_index=True),
         "sites": ranking(chosen, chosen_line, data.seats),
+        "municipalities": municipalities(data, network),
     }
     results.mkdir(parents=True, exist_ok=True)
     for name, table in tables.items():
