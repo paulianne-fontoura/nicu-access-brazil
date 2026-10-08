@@ -1,5 +1,5 @@
 # Requires uv (https://docs.astral.sh/uv/).
-.PHONY: setup ingest status build analyze test lint
+.PHONY: setup ingest status build analyze report note test lint
 
 setup:
 	uv sync
@@ -17,6 +17,12 @@ build:
 
 analyze:
 	uv run nicu analyze
+
+report:
+	uv run nicu report
+
+note: report
+	cd report && latexmk -pdf -interaction=nonstopmode note.tex
 
 test:
 	uv run pytest -q

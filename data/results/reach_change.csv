@@ -1,0 +1,3 @@
+scope,first,last,threshold,births_first,uncovered_first,brought_within_reach,fell_out_of_reach,uncovered_with_last_map,municipalities_opened,opened_beyond_threshold,beds_opened_beyond_threshold,municipalities_closed
+sus,2006,2025,120,34171,4779,2423,307,2663,112,34,341,25
+all,2008,2025,120,34178,3469,1751,58,1776,109,31,330,23

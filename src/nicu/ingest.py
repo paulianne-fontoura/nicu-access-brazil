@@ -131,6 +131,7 @@ IBGE_KEYS = [
     ("ibge_links", "BR", 2016, None, "final"),
     ("ibge_arranjos", "BR", 2015, None, "final"),
     ("ibge_seats", "BR", 2022, None, "final"),
+    ("ibge_states", "BR", 2022, None, "final"),
 ]
 
 

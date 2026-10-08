@@ -81,7 +81,7 @@ def test_missing_lists_what_the_study_still_needs(tmp_path):
 
 
 def test_expected_covers_twenty_years_of_both_datasets_and_ibge():
-    assert len(ingest.expected()) == 20 * 27 * 2 + 3
+    assert len(ingest.expected()) == 20 * 27 * 2 + 4
 
 
 def test_compare_ignores_types_and_row_order():

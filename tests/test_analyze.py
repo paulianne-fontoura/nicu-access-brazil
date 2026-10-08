@@ -85,6 +85,37 @@ def test_bed_growth_separates_old_and_new_municipalities(data):
     assert (growth["beds_in_new_municipalities"], growth["new_municipalities"]) == (6, 1)
 
 
+def test_reach_change_follows_the_births_of_the_first_year(data):
+    network, _ = analyze.networks(data)
+    change = analyze.reach_change(data, network, 2020, 2021, "sus")
+    assert (change["births_first"], change["uncovered_first"]) == (40, 20)  # C, 180 min
+    assert (change["brought_within_reach"], change["fell_out_of_reach"]) == (20, 0)
+    assert change["uncovered_with_last_map"] == 0
+    assert (change["municipalities_opened"], change["opened_beyond_threshold"]) == (1, 1)
+    assert change["beds_opened_beyond_threshold"] == 6  # D was 210 min away
+    assert change["municipalities_closed"] == 0
+
+
+def test_reach_change_counts_units_that_close(data):
+    network, _ = analyze.networks(data)
+    change = analyze.reach_change(data, network, 2021, 2020, "sus")  # D closes
+    assert change["fell_out_of_reach"] == 30  # C, born in D in 2021
+    assert change["municipalities_closed"] == 1
+
+
+def test_municipalities_table(data):
+    network, _ = analyze.networks(data)
+    table = analyze.municipalities(data, network).set_index("mun")
+    assert len(table) == 4
+    assert (table.loc["110003", "minutes_first"], table.loc["110003", "minutes_last"]) == (180, 30)
+    assert table.loc["110004", "sus_beds_last"] == 6 and table.loc["110004", "sus_beds_first"] == 0
+    assert table.births_at_risk_first.to_dict() == {"110001": 10, "110002": 10, "110003": 20,
+                                                    "110004": 0}  # fmt: skip
+    assert table.loc["110003", "births_at_risk_last_years"] == 50
+    assert table.index[table.candidate].tolist() == ["110003"]
+    assert set(table.region) == {"Norte"}
+
+
 def test_decomposition_adds_up(data):
     network, _ = analyze.networks(data)
     row = analyze.decomposition(data, network, 2020, 2021).query("scope == 'sus'").iloc[0]
@@ -114,6 +145,7 @@ def test_sites_and_ranking(data):
     assert set(chosen.mun) <= {"110003", "110004"}  # either serves C, 30 minutes apart
     row = coverage.query("basis == 'pooled'").iloc[0]
     assert (row.births_uncovered, row.births_newly_covered, row.candidates) == (20, 20, 2)
+    assert row.births_coverable == 20
     line, _ = analyze.sites(data, straight, years=[2020], units=(1,), thresholds=(120,))
     ranking = analyze.ranking(chosen, line, data.seats)
     assert len(ranking) == 1
@@ -141,7 +173,7 @@ def test_run_writes_one_csv_per_table(data, tmp_path):
         getattr(data, field).to_parquet(processed / f"{name}.parquet")
     tables = analyze.run(processed, tmp_path / "results")
     assert sorted(p.stem for p in (tmp_path / "results").glob("*.csv")) == sorted(tables)
-    assert len(tables) == 7
+    assert len(tables) == 9
 
 
 def test_sensitivity_covers_groups_and_arrangement_times(data):

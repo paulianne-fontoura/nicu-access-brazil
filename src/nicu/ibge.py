@@ -1,8 +1,10 @@
 """IBGE reference files: the public transport network between municipalities,
-the population arrangements and the municipal seats."""
+the population arrangements, the municipal seats and the state boundaries."""
 
 from __future__ import annotations
 
+import gzip
+import json
 import shutil
 import sqlite3
 import tempfile
@@ -25,7 +27,9 @@ def download(url: str, dest: Path) -> Path:
     dest.parent.mkdir(parents=True, exist_ok=True)
     tmp = dest.with_name(dest.name + ".part")
     with urllib.request.urlopen(url, timeout=120) as resp, tmp.open("wb") as fh:
-        shutil.copyfileobj(resp, fh)
+        # the IBGE API may answer compressed whatever the request asked
+        gzipped = resp.headers.get("Content-Encoding", "").lower() == "gzip"
+        shutil.copyfileobj(gzip.GzipFile(fileobj=resp) if gzipped else resp, fh)
     tmp.replace(dest)
     return dest
 
@@ -104,11 +108,31 @@ def parse_seats(gpkg_zip: Path) -> pd.DataFrame:
     return seats.sort_values("mun").reset_index(drop=True)
 
 
+def parse_states(geojson: Path) -> pd.DataFrame:
+    """State boundaries as one row per point: state code, polygon, ring, order.
+
+    Kept as a plain table so the map needs no geographic library."""
+    features = json.loads(geojson.read_text(encoding="utf-8"))["features"]
+    rows = []
+    for feature in features:
+        geometry = feature["geometry"]
+        polygons = geometry["coordinates"]
+        if geometry["type"] == "Polygon":
+            polygons = [polygons]
+        for part, polygon in enumerate(polygons):
+            for ring, points in enumerate(polygon):
+                for order, (lon, lat) in enumerate(points):
+                    rows.append((feature["properties"]["codarea"], part, ring, order, lon, lat))
+    columns = ["uf_code", "part", "ring", "point", "lon", "lat"]
+    return pd.DataFrame(rows, columns=columns).sort_values(columns[:4], ignore_index=True)
+
+
 SOURCES = {
     # name: (url, source file, parser, year of the data)
     "ibge_links": (C.IBGE_LINKS_URL, "ligacoes_2016.xlsx", parse_links, 2016),
     "ibge_arranjos": (C.IBGE_ARRANJOS_URL, "arranjos_tab01.xlsx", parse_arranjos, 2015),
     "ibge_seats": (C.IBGE_SEATS_URL, "localidades_2022_gpkg.zip", parse_seats, 2022),
+    "ibge_states": (C.IBGE_STATES_URL, "estados_2022_minima.geojson", parse_states, 2022),
 }
 
 

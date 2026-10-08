@@ -173,7 +173,7 @@ def build(
             _check(con, years, n_states)
         con.execute(f"copy {name} to '{(out / (name + '.parquet')).as_posix()}' (format parquet)")
         summary["tables"][name] = con.execute(f"select count(*) from {name}").fetchone()[0]
-    for name in ("links", "arranjos", "seats"):
+    for name in ("links", "arranjos", "seats", "states"):
         shutil.copyfile(raw / "ibge" / f"{name}.parquet", out / f"ibge_{name}.parquet")
     summary["by_year"] = [
         dict(zip(("year", "status", "births", "weight_missing"), row, strict=True))

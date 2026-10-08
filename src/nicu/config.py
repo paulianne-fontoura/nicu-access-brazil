@@ -78,6 +78,11 @@ IBGE_SEATS_URL = (
     "https://geoftp.ibge.gov.br/organizacao_do_territorio/estrutura_territorial/"
     "localidades/Localidades_do_Brasil/2022/Localidades_Brasil_gpkg.zip"
 )
+# State boundaries for the map, lowest resolution (IBGE malhas API, 2022)
+IBGE_STATES_URL = (
+    "https://servicodados.ibge.gov.br/api/v3/malhas/paises/BR"
+    "?formato=application/vnd.geo+json&intrarregiao=UF&qualidade=minima&periodo=2022"
+)
 
 # Paths, relative to the repository root
 ROOT = Path(__file__).resolve().parents[2]
