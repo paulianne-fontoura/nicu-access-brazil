@@ -1,0 +1,36 @@
+units,mun,births_within_reach_per_year,years_chosen,also_at_90_min,also_at_180_min,also_straight_line,name,uf
+5,260120,106.2,5,False,False,True,Arcoverde,PE
+5,291750,73.6,5,True,False,False,Jacobina,BA
+5,110028,65.6,1,False,False,False,Rolim de Moura,RO
+5,290160,60.6,2,True,False,False,Antas,BA
+5,292870,57.8,1,False,False,False,Santo Antônio de Jesus,BA
+10,260120,106.2,4,False,False,True,Arcoverde,PE
+10,291750,73.6,5,True,False,True,Jacobina,BA
+10,110028,65.6,1,True,False,False,Rolim de Moura,RO
+10,290160,60.6,3,True,False,False,Antas,BA
+10,292870,57.8,4,True,False,False,Santo Antônio de Jesus,BA
+10,150390,53.8,3,False,False,False,Juruti,PA
+10,291072,51.2,3,True,False,True,Eunápolis,BA
+10,330452,45.2,2,True,False,True,Rio das Ostras,RJ
+10,210160,44.6,3,False,True,False,Barra do Corda,MA
+10,230410,43.4,1,False,False,False,Crateús,CE
+20,260410,82.6,4,True,False,False,Caruaru,PE
+20,261390,81.4,4,True,False,True,Serra Talhada,PE
+20,291750,73.6,5,True,False,True,Jacobina,BA
+20,110028,65.6,4,True,False,False,Rolim de Moura,RO
+20,290160,60.6,2,False,False,False,Antas,BA
+20,292870,57.8,4,True,False,False,Santo Antônio de Jesus,BA
+20,150390,53.8,4,False,False,True,Juruti,PA
+20,291072,51.2,5,True,False,True,Eunápolis,BA
+20,330452,45.2,3,True,False,True,Rio das Ostras,RJ
+20,210160,44.6,3,True,True,False,Barra do Corda,MA
+20,230410,43.4,5,False,True,True,Crateús,CE
+20,150550,39,2,False,False,False,Paragominas,PA
+20,510795,39,5,False,False,False,Tangará da Serra,MT
+20,290390,37,4,False,True,True,Bom Jesus da Lapa,BA
+20,110002,35.8,3,False,True,False,Ariquemes,RO
+20,150360,35.8,3,False,True,False,Itaituba,PA
+20,221060,35.6,2,False,True,False,São Raimundo Nonato,PI
+20,510675,31.4,1,False,True,False,Pontes e Lacerda,MT
+20,150210,31.2,1,False,False,False,Cametá,PA
+20,230550,29.8,0,True,False,False,Iguatu,CE

@@ -1,0 +1,3 @@
+scope,first,last,threshold,share_first,share_last,change,beds_effect,births_effect,share_first_births_last_beds,share_last_births_first_beds
+sus,2006,2025,120,0.139855,0.0928702,-0.0469852,-0.0708804,0.0238952,0.0779316,0.172707
+all,2008,2025,120,0.101498,0.0614427,-0.0400554,-0.0529848,0.0129294,0.0519633,0.117877
